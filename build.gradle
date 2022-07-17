@@ -18,6 +18,8 @@ repositories {
 	mavenCentral()
 }
 
+def assertjVersion = '3.23.1'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.springfox:springfox-boot-starter:3.0.0'
@@ -25,6 +27,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.rest-assured:rest-assured:4.4.0'
+	testImplementation 'org.assertj:assertj-core:3.23.1'
+	testImplementation 'io.qameta.allure:allure-rest-assured:2.17.3'
 }
 
 tasks.named('test') {
