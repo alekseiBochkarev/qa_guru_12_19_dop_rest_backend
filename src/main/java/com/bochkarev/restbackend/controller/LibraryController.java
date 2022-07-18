@@ -6,12 +6,14 @@ import com.bochkarev.restbackend.exception.DuplicateAuthorException;
 import com.bochkarev.restbackend.exception.DuplicateBookException;
 import com.bochkarev.restbackend.exception.NullAuthorException;
 import com.bochkarev.restbackend.exception.NullBookException;
+import com.bochkarev.restbackend.exception.FileNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,14 +53,21 @@ public class LibraryController {
 
     @GetMapping("book/find")
     @ApiOperation("Поиск книги по автору")
-    public List<BookInfo> findBook (@RequestBody BookInfo bookInfo) {
-        return  books.entrySet()
+    public BookInfo findBook (@RequestBody BookInfo bookInfo) throws FileNotFoundException {
+        Optional<Integer> result = books.entrySet()
                 .stream()
-                .filter(books -> books.getValue().getBookName().equals(bookInfo.getBookName())
-                        & books.getValue().getAuthor().getFirstName().equals(bookInfo.getAuthor().getFirstName())
-                & books.getValue().getAuthor().getSecondName().equals(bookInfo.getAuthor().getSecondName()))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+                .filter(entry -> bookInfo.equals(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .findFirst();
+        if (result.isPresent()) {
+            return BookInfo.builder()
+                    .bookName(books.get(result.get()).getBookName())
+                    .author(books.get(result.get()).getAuthor())
+                    .id(books.get(result.get()).getId())
+                    .build();
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 
     @PostMapping("book/add")
@@ -81,6 +90,7 @@ public class LibraryController {
             return BookInfo.builder()
                     .bookName(bookInfo.getBookName())
                     .author(bookInfo.getAuthor())
+                    .id(authors.size())
                     .build();
         }
     }
