@@ -61,7 +61,6 @@ public class PetsTest {
                 .willReturn(aResponse()
                         .withBody("{{request.body}}")
                         .withStatus(200)));
-
     }
 
     @Test
