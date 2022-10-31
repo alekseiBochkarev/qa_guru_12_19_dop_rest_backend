@@ -1,13 +1,22 @@
 package com.bochkarev.restbackend;
 
+import com.bochkarev.restbackend.config.PetsServiceConfig;
 import com.bochkarev.restbackend.domain.Author;
 import com.bochkarev.restbackend.domain.BookInfo;
+import com.bochkarev.restbackend.domain.pets.Pet;
+import com.bochkarev.restbackend.domain.pets.PetDto;
+import com.bochkarev.restbackend.domain.pets.PetsMapper;
 import com.bochkarev.restbackend.tools.Tools;
+import com.bochkarev.restbackend.util.PetsClient;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import net.bytebuddy.utility.RandomString;
+import org.aeonbits.owner.ConfigFactory;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 
@@ -18,10 +27,14 @@ import static io.restassured.RestAssured.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LibraryControllerTest {
+    protected static PetsServiceConfig config() {
+        return ConfigFactory.newInstance().create(PetsServiceConfig.class, System.getProperties());
+    }
 
     static {
-        RestAssured.baseURI = "http://localhost:8081";
+        RestAssured.baseURI = config().application_host() + ":" + config().application_port();
     }
+    private PetsClient petsClient = new PetsClient();
 
     private RequestSpecification spec = with()
             .basePath("/")

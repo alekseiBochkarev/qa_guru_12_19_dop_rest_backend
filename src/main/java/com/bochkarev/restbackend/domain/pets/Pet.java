@@ -23,4 +23,14 @@ public class Pet {
     private List<Tag> tags;
     @JsonProperty("status")
     private String status;
+
+    public Pet(Pet pet) {
+        this.id = pet.getId();
+        this.category = pet.getCategory();
+        this.name = pet.getName();
+        this.photoUrls = pet.getPhotoUrls();
+        this.tags = pet.getTags();
+        this.status = pet.getStatus();
+    }
+
 }
