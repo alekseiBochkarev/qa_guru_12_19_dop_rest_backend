@@ -15,4 +15,9 @@ public interface PetsServiceConfig extends Config{
 
     @Key("server.port")
     String application_port();
+    @Key("wiremock-host")
+    String wiremock_host();
+
+    @Key("wiremock-port")
+    int wiremock_port();
 }
