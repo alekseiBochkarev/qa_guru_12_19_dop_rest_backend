@@ -68,12 +68,9 @@ public class PetsTest {
                 .withHeader("Content-Type", matching("application/json"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
-                        //.withBody("{{request.body}}")
+                        .withBody("{{{request.body}}}")));
                         //.withBodyFile("json/request.json")));
-                        .withBody("{{request.body}}")
-                        .withTransformers("response-template")));
-        //.withTransformers("response-template")));
-        //.withStatus(200)));
+                        //.withBody("{{{jsonPath request.body '$'}}}")));
     }
 
     @Test
