@@ -3,6 +3,7 @@ package com.bochkarev.restbackend.controller;
 import com.bochkarev.restbackend.config.PetsServiceConfig;
 import com.bochkarev.restbackend.domain.pets.Pet;
 import com.bochkarev.restbackend.domain.pets.PetDto;
+import com.bochkarev.restbackend.domain.pets.PetsMapper;
 import io.swagger.annotations.ApiOperation;
 import org.aeonbits.owner.ConfigFactory;
 import org.springframework.http.HttpEntity;
@@ -26,10 +27,12 @@ public class PetsController {
         String petUrl = config().remote_host() + "/pet";
         HttpEntity<Pet> request = new HttpEntity<>(new Pet(pet));
         Pet petResult = restTemplate.exchange(petUrl, HttpMethod.POST, request, Pet.class).getBody();
-        return PetDto.builder()
+       /* return PetDto.builder()
                 .id(petResult.getId())
                 .name(petResult.getName())
-                .build();
+                .build();*/
+        assert petResult != null;
+        return PetsMapper.map(petResult);
     }
 
 }
