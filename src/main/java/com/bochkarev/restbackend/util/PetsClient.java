@@ -21,8 +21,8 @@ public class PetsClient {
         updateDto.setName(getRandomString(10));
         updateDto.setStatus(getRandomString(7));
         updateDto.setPhotoUrls(new ArrayList<>(Arrays.asList(
-                "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fshark&psig=AOvVaw1fcXANt0Qm8Pp8m755bOdL&ust=1667284204418000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCJCzrefrifsCFQAAAAAdAAAAABAP",
-                "https://www.google.com/url?sa=i&url=https%3A%2F%2Fpixabay.com%2Fimages%2Fsearch%2Fdog%2F&psig=AOvVaw0pCnPurvF0JBGfmYNZxaBq&ust=1667285495048000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCJDx4M7wifsCFQAAAAAdAAAAABAE")));
+                "ggadgadsf",
+                "aahsdfasdhadfsfasdfha")));
         updateDto.setCategory(categoriesClient.getCategoryCreateDto());
         updateDto.setTags(new ArrayList<>((Arrays.asList(tagsClient.getTagCreateDto(), tagsClient
                 .getTagCreateDto()))));

@@ -1,0 +1,18 @@
+{
+  "id": 0,
+  "category": {
+    "id": 0,
+    "name": "fish"
+  },
+  "name": "sharp",
+  "photoUrls": [
+    "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fshark&psig=AOvVaw1fcXANt0Qm8Pp8m755bOdL&ust=1667284204418000&source=images&cd=vfe&ved=0CAwQjRxqFwoTCJCzrefrifsCFQAAAAAdAAAAABAE"
+  ],
+  "tags": [
+    {
+      "id": 0,
+      "name": "danger"
+    }
+  ],
+  "status": "hmmm"
+}

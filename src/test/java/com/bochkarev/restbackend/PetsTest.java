@@ -8,28 +8,35 @@ import com.bochkarev.restbackend.util.PetsClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import io.qameta.allure.Step;
+import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.aeonbits.owner.ConfigFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+//@WireMockTest(httpPort = 9997)
 public class PetsTest {
     protected static PetsServiceConfig config() {
         return ConfigFactory.newInstance().create(PetsServiceConfig.class, System.getProperties());
     }
+
     private final ObjectMapper mapper = new ObjectMapper();
     private PetsClient petsClient = new PetsClient();
-    //private static WireMockServer wireMockServer;
+
+    public WireMockServer wireMockServer;
+
 
     static {
         RestAssured.baseURI = config().application_host() + ":" + config().application_port();
@@ -37,32 +44,37 @@ public class PetsTest {
 
     private RequestSpecification spec = with()
             .contentType(ContentType.JSON);
-/*
-    @BeforeAll
-    public static void setUp() {
+
+    @BeforeEach
+    public void setUp() throws JsonProcessingException {
         wireMockServer = new WireMockServer(options().port(config().wiremock_port()).extensions(new ResponseTemplateTransformer(true)));
         wireMockServer.start();
         createMockStub();
-    }*/
-    /*
+    }
 
-    @AfterAll
-    public static void tearDown() {
+
+    @AfterEach
+    public void tearDown() {
         wireMockServer.stop();
-    }*/
+    }
 
 
     private String buildRequestBodyForCreatePet(Pet pet) throws JsonProcessingException {
         return this.mapper.writeValueAsString(pet);
     }
-/*
-    @Step
-    public static void createMockStub() {
-        wireMockServer.stubFor(post(urlPathEqualTo("/pet"))
+
+    public void createMockStub() throws JsonProcessingException {
+        wireMockServer.stubFor(post(urlEqualTo("/pet"))
+                .withHeader("Content-Type", matching("application/json"))
                 .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        //.withBody("{{request.body}}")
+                        //.withBodyFile("json/request.json")));
                         .withBody("{{request.body}}")
-                        .withStatus(200)));
-    }*/
+                        .withTransformers("response-template")));
+        //.withTransformers("response-template")));
+        //.withStatus(200)));
+    }
 
     @Test
     void createPetAndCheck() throws JsonProcessingException {
