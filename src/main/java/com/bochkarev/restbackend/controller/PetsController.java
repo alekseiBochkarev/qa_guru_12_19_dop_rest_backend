@@ -7,12 +7,14 @@ import com.bochkarev.restbackend.domain.pets.PetsMapper;
 import io.swagger.annotations.ApiOperation;
 import org.aeonbits.owner.ConfigFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class PetsController {
@@ -48,6 +50,26 @@ public class PetsController {
                 .build();*/
         assert petResult != null;
         return PetsMapper.map(petResult);
+    }
+
+    @GetMapping("pet/get/findByStatus")
+    @ApiOperation("get pet by status")
+    public HttpEntity<String>  getPet(@RequestParam String status) {
+        String petUrl = UriComponentsBuilder.fromHttpUrl(config().remote_host() + "/pet/findByStatus")
+                .queryParam("status", "{status}")
+                .encode()
+                .toUriString();
+        Map<String, String> params = new HashMap<>();
+        params.put("status", status);
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<?> request = new HttpEntity<>(headers);
+        HttpEntity<String> response = restTemplate.exchange(petUrl, HttpMethod.GET, request, String.class, params);
+       /* return PetDto.builder()
+                .id(petResult.getId())
+                .name(petResult.getName())
+                .build();*/
+        assert response != null;
+        return response;
     }
 
 }

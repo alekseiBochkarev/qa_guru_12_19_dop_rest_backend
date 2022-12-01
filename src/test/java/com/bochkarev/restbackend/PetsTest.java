@@ -3,12 +3,15 @@ package com.bochkarev.restbackend;
 import com.bochkarev.restbackend.config.PetsServiceConfig;
 import com.bochkarev.restbackend.domain.pets.Pet;
 import com.bochkarev.restbackend.domain.pets.PetDto;
+import com.bochkarev.restbackend.domain.pets.PetNew;
 import com.bochkarev.restbackend.domain.pets.PetsMapper;
 import com.bochkarev.restbackend.util.PetsClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.extension.responsetemplating.ResponseTemplateTransformer;
+import com.github.tomakehurst.wiremock.matching.MatchResult;
+import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
@@ -25,6 +28,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.with;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //@WireMockTest(httpPort = 9997)
 public class PetsTest {
@@ -45,17 +49,23 @@ public class PetsTest {
     private RequestSpecification spec = with()
             .contentType(ContentType.JSON);
 
+
     @BeforeEach
     public void setUp() throws JsonProcessingException {
-        wireMockServer = new WireMockServer(options().port(config().wiremock_port()).extensions(new ResponseTemplateTransformer(true)));
-        wireMockServer.start();
-        createMockStub();
+        if(config().use_mock()) {
+            wireMockServer = new WireMockServer(options().port(config().wiremock_port()).extensions(new ResponseTemplateTransformer(true)));
+            wireMockServer.start();
+            createMockStub();
+            createMockStubForGet();
+        }
     }
 
 
     @AfterEach
     public void tearDown() {
-        wireMockServer.stop();
+        if (config().use_mock()) {
+            wireMockServer.stop();
+        }
     }
 
 
@@ -71,6 +81,55 @@ public class PetsTest {
                         .withBody("{{{request.body}}}")));
                         //.withBodyFile("json/request.json")));
                         //.withBody("{{{jsonPath request.body '$'}}}")));
+    }
+
+    public void createMockStubForGet() throws JsonProcessingException {
+        wireMockServer.stubFor(get(urlPathEqualTo(
+                "/pet/findByStatus"))
+                //.withHeader("Content-Type", matching("application/json"))
+                .withQueryParam("status", containing("available"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[\n" +
+                                "    {\n" +
+                                "        \"id\": 1235701234,\n" +
+                                "        \"category\": {\n" +
+                                "            \"id\": 0,\n" +
+                                "            \"name\": \"string\"\n" +
+                                "        },\n" +
+                                "        \"name\": \"fish\",\n" +
+                                "        \"photoUrls\": [\n" +
+                                "            \"string\"\n" +
+                                "        ],\n" +
+                                "        \"tags\": [\n" +
+                                "            {\n" +
+                                "                \"id\": 0,\n" +
+                                "                \"name\": \"string\"\n" +
+                                "            }\n" +
+                                "        ],\n" +
+                                "        \"status\": \"available\"\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "        \"id\": 542346,\n" +
+                                "        \"category\": {\n" +
+                                "            \"id\": 0,\n" +
+                                "            \"name\": \"string\"\n" +
+                                "        },\n" +
+                                "        \"name\": \"tommy\",\n" +
+                                "        \"photoUrls\": [\n" +
+                                "            \"string\"\n" +
+                                "        ],\n" +
+                                "        \"tags\": [\n" +
+                                "            {\n" +
+                                "                \"id\": 0,\n" +
+                                "                \"name\": \"string\"\n" +
+                                "            }\n" +
+                                "        ],\n" +
+                                "        \"status\": \"available\"\n" +
+                                "    }" +
+                                "]")));
+        //.withBodyFile("json/request.json")));
+        //.withBody("{{{jsonPath request.body '$'}}}")));
     }
 
     @Test
@@ -90,6 +149,22 @@ public class PetsTest {
                 .extract().as(PetDto.class);
         assertEquals(pet.getId(), petDto.getId());
         assertEquals(pet.getName(), petDto.getName());
+    }
+
+    @Test
+    void testGetPet () {
+        String path = "pet/get/findByStatus";
+        PetNew[] pets = given()
+                .spec(spec)
+                .queryParam("status", "available")
+                .when()
+                .get(path)
+                .then()
+                .log().status()
+                .log().body()
+                .statusCode(200)
+                .extract().as(PetNew[].class);
+        assertTrue(pets != null);
     }
 
     @Test

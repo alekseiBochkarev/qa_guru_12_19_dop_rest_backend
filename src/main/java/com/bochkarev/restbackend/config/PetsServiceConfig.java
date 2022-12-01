@@ -20,4 +20,7 @@ public interface PetsServiceConfig extends Config{
 
     @Key("wiremock-port")
     int wiremock_port();
+
+    @Key("use-mock")
+    boolean use_mock();
 }
