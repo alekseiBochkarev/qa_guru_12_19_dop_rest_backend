@@ -9,6 +9,7 @@ import org.aeonbits.owner.ConfigFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -27,6 +28,20 @@ public class PetsController {
         String petUrl = config().remote_host() + "/pet";
         HttpEntity<Pet> request = new HttpEntity<>(new Pet(pet));
         Pet petResult = restTemplate.exchange(petUrl, HttpMethod.POST, request, Pet.class).getBody();
+       /* return PetDto.builder()
+                .id(petResult.getId())
+                .name(petResult.getName())
+                .build();*/
+        assert petResult != null;
+        return PetsMapper.map(petResult);
+    }
+
+    @PutMapping("pet/update")
+    @ApiOperation("update pet")
+    public PetDto updatePet(@RequestBody Pet pet) {
+        String petUrl = config().remote_host() + "/pet";
+        HttpEntity<Pet> request = new HttpEntity<>(new Pet(pet));
+        Pet petResult = restTemplate.exchange(petUrl, HttpMethod.PUT, request, Pet.class).getBody();
        /* return PetDto.builder()
                 .id(petResult.getId())
                 .name(petResult.getName())
